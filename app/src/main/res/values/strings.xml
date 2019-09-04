@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Mars</string>
+    <string name="search">Search</string>
+    <string name="inputUserName">User name</string>
 </resources>
