@@ -2,4 +2,7 @@
     <string name="app_name">Mars</string>
     <string name="search">Search</string>
     <string name="inputUserName">User name</string>
+    <string name="server_error">Server error</string>
+    <string name="client_error">Client error</string>
+    <string name="unsupported_response">Unsupported response</string>
 </resources>
