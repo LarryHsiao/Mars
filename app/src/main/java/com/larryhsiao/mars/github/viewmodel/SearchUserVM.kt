@@ -6,7 +6,7 @@ import android.os.HandlerThread
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.larryhsiao.mars.R
+import com.larryhsiao.mars.Pagination
 import com.larryhsiao.mars.github.*
 
 /**

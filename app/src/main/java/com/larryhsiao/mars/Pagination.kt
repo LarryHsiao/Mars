@@ -1,4 +1,4 @@
-package com.larryhsiao.mars.github
+package com.larryhsiao.mars
 
 /**
  * The Pagination model.

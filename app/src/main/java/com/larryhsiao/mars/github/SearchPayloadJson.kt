@@ -3,7 +3,7 @@ package com.larryhsiao.mars.github
 /**
  * Payload object of Github search api
  */
-class SearchPayload {
+class SearchPayloadJson {
     /**
      * Total count of this search
      */

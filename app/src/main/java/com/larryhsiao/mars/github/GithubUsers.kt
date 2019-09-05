@@ -3,7 +3,7 @@ package com.larryhsiao.mars.github
 import com.silverhetch.clotho.Source
 
 /**
- * Source to build user list from json which return from Github
+ * User list adapter from Array<UserJson>
  */
 class GithubUsers(private val items: Array<UserJson>) : Source<List<User>> {
     private val value by lazy {

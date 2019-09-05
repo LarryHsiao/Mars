@@ -10,7 +10,7 @@ import com.silverhetch.clotho.connection.TargetImpl
 /**
  * Get User list by user name from github api.
  */
-class ByName(
+class UserByName(
     private val keyword: String,
     private val page: Int
 ) : Source<Response> {

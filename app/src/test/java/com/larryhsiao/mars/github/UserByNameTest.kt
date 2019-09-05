@@ -7,11 +7,11 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 /**
- * Tests for [com.larryhsiao.mars.github.ByName]
+ * Tests for [com.larryhsiao.mars.github.UserByName]
  */
 @Ignore
 @RunWith(RobolectricTestRunner::class)
-class ByNameTest {
+class UserByNameTest {
 
     /**
      * Learning test: Check teh result is exist
@@ -20,7 +20,7 @@ class ByNameTest {
     fun simpleCode() {
         assertEquals(
             200,
-            ByName(
+            UserByName(
                 "LarryHsiao",
                 0
             ).value().code
@@ -36,7 +36,7 @@ class ByNameTest {
         assertNotEquals(
             "",
             String(
-                ByName(
+                UserByName(
                     "LarryHsiao",
                     0
                 ).value().bodyBytes
@@ -55,7 +55,7 @@ class ByNameTest {
         assertNotEquals(
             "",
             String(
-                ByName(
+                UserByName(
                     "LarryHsiao",
                     100
                 ).value().bodyBytes
