@@ -6,15 +6,13 @@ import android.os.HandlerThread
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.larryhsiao.mars.github.ByName
-import com.larryhsiao.mars.github.User
 import com.larryhsiao.mars.R
-import com.larryhsiao.mars.github.GithubUsers
+import com.larryhsiao.mars.github.*
 
 /**
  *  View model of searching user
  */
-class SearchUserVM(private val app: Application) : AndroidViewModel(app) {
+class SearchUserVM(app: Application) : AndroidViewModel(app) {
     private val backgroundThread = HandlerThread("SearchBG").apply { start() }
     private val bgHandler = Handler(backgroundThread.looper)
 
@@ -22,8 +20,9 @@ class SearchUserVM(private val app: Application) : AndroidViewModel(app) {
     private val users = ArrayList<User>()
     private val usersLiveData =
         MutableLiveData<List<User>>().apply { value = users }
+    private lateinit var pagination: Pagination<User>
     private var keyword: String = ""
-    private var page = 0
+    private var loading = false
 
     override fun onCleared() {
         super.onCleared()
@@ -41,50 +40,37 @@ class SearchUserVM(private val app: Application) : AndroidViewModel(app) {
      * Load up the first page, this will clean all the exist search result.
      */
     fun search(keyword: String) {
+        loading = true
         this.keyword = keyword
-        this.page = 0
         bgHandler.post {
-            ByName(
-                keyword,
-                0
-            ).value().let {
-                when {
-                    it.code == 200 -> {
-                        users.clear()
-                        usersLiveData.value = users
-                    }
-                    else -> errorHandling(it.code)
-                }
+            users.clear()
+            pagination = UserPagination(keyword) { code, message ->
+                handleErr(
+                    code,
+                    message
+                )
             }
+            users.addAll(pagination.firstPage())
+            usersLiveData.postValue(users)
         }
+    }
+
+    private fun handleErr(code: Int, message: String) {
+        error.postValue("$code $message")
     }
 
     /**
      * Load the next page from github api.
      */
     fun nextPage(): LiveData<List<User>> {
+        loading = true
         val live = MutableLiveData<List<User>>()
         bgHandler.post {
-            ByName(
-                keyword,
-                ++page
-            ).value().let {
-                when {
-                    it.code == 200 -> {
-                    }
-                    else -> errorHandling(it.code)
-                }
-            }
+            val result = pagination.newPage()
+            users.addAll(result)
+            live.postValue(result)
         }
         return live
-    }
-
-    private fun errorHandling(code: Int) {
-        when (code) {
-            in 400..499 -> error.value = app.getString(R.string.client_error)
-            in 500..599 -> error.value = app.getString(R.string.server_error)
-            else -> error.value = app.getString(R.string.unsupported_response)
-        }
     }
 
     /**

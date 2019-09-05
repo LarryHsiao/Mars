@@ -18,7 +18,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val adapter = UserAdapter()
+        val adapter = UserAdapter{
+            vm.nextPage()
+        }
         searchList.layoutManager = LinearLayoutManager(this)
         searchList.adapter = adapter
 

@@ -14,7 +14,7 @@ import kotlinx.android.synthetic.main.item_user.view.*
 /**
  * Adapter to show users on list.
  */
-class UserAdapter() : RecyclerView.Adapter<ViewHolder>() {
+class UserAdapter(endOfList:()->Unit) : RecyclerView.Adapter<ViewHolder>() {
     private val users = ArrayList<User>()
     override fun onCreateViewHolder(
         parent: ViewGroup,
