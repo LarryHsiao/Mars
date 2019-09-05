@@ -51,6 +51,7 @@ class SearchUserVM(app: Application) : AndroidViewModel(app) {
                 )
             }
             users.addAll(pagination.firstPage())
+            loading = false
             usersLiveData.postValue(users)
         }
     }
@@ -63,11 +64,15 @@ class SearchUserVM(app: Application) : AndroidViewModel(app) {
      * Load the next page from github api.
      */
     fun nextPage(): LiveData<List<User>> {
-        loading = true
         val live = MutableLiveData<List<User>>()
+        if (loading){
+            return live
+        }
+        loading = true
         bgHandler.post {
             val result = pagination.newPage()
             users.addAll(result)
+            loading = false
             live.postValue(result)
         }
         return live

@@ -2,6 +2,8 @@ package com.larryhsiao.mars
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.inputmethod.EditorInfo
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,26 +16,59 @@ import kotlinx.android.synthetic.main.activity_main.*
  */
 class MainActivity : AppCompatActivity() {
     private lateinit var vm: SearchUserVM
-
+    private lateinit var adapter: UserAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val adapter = UserAdapter{
-            vm.nextPage()
+        adapter = UserAdapter {
+            refreshLayout.isRefreshing = true
+            vm.nextPage().observe(this, Observer {
+                refreshLayout.isRefreshing = false
+                adapter.append(it)
+            })
         }
         searchList.layoutManager = LinearLayoutManager(this)
         searchList.adapter = adapter
 
         vm = ViewModelProviders.of(this).get(SearchUserVM::class.java)
-        vm.users().observe(this, Observer { adapter.loadUp(it) })
+        vm.users().observe(this, Observer {
+            refreshLayout.isRefreshing = false
+            adapter.loadUp(it)
+        })
         vm.error().observe(this, Observer { errorHandling(it) })
-        vm.search("")
 
-        searchButton.setOnClickListener { 
-           vm.search(searchInput.text.toString())
+        searchButton.setOnClickListener { searchByInput() }
+        refreshLayout.setOnRefreshListener { searchByInput() }
+
+        searchInput.setOnEditorActionListener { textView, i, keyEvent ->
+            when (i) {
+                EditorInfo.IME_ACTION_SEARCH -> {
+                    searchByInput()
+                    true
+                }
+                else -> false
+            }
         }
     }
 
+    private fun searchByInput() {
+        val input = searchInput.text.toString()
+        if (input.isEmpty()) {
+            refreshLayout.isRefreshing = false
+            return
+        }
+        refreshLayout.isRefreshing = true
+        vm.search(input)
+    }
+
     private fun errorHandling(it: String) {
+        if (it.isEmpty()) {
+            return
+        }
+        AlertDialog.Builder(this)
+            .setTitle(R.string.error)
+            .setMessage(it)
+            .setPositiveButton(R.string.ok) { _, _ -> }
+            .show()
     }
 }

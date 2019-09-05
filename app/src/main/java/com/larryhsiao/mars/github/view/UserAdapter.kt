@@ -14,7 +14,7 @@ import kotlinx.android.synthetic.main.item_user.view.*
 /**
  * Adapter to show users on list.
  */
-class UserAdapter(endOfList:()->Unit) : RecyclerView.Adapter<ViewHolder>() {
+class UserAdapter(private val endOfList:()->Unit) : RecyclerView.Adapter<ViewHolder>() {
     private val users = ArrayList<User>()
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -42,6 +42,10 @@ class UserAdapter(endOfList:()->Unit) : RecyclerView.Adapter<ViewHolder>() {
                 )
             }
         ).into(holder.rootView.userImage)
+
+        if (holder.adapterPosition == users.size - 4){
+            endOfList()
+        }
     }
 
     fun loadUp(users:List<User>){
