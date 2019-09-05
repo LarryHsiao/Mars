@@ -1,14 +1,27 @@
 package com.larryhsiao.mars
 
+import android.content.DialogInterface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Html
+import android.text.method.LinkMovementMethod
+import android.text.util.Linkify
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.view.inputmethod.EditorInfo
+import android.widget.EditText
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.core.text.util.LinkifyCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.larryhsiao.mars.github.view.UserAdapter
 import com.larryhsiao.mars.github.viewmodel.SearchUserVM
+import com.silverhetch.aura.view.measures.DP
 import kotlinx.android.synthetic.main.activity_main.*
 
 /**
@@ -49,6 +62,42 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.about -> {
+                AlertDialog.Builder(this)
+                    .setTitle(R.string.about)
+                    .setView(TextView(this).apply {
+                        setTextAppearance(R.style.Base_TextAppearance_AppCompat_Body1)
+
+                        val padding = DP(context, 24f).px().toInt()
+                        layoutParams =
+                            ViewGroup.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
+                                .apply {
+                                    setPadding(
+                                        padding,
+                                        padding,
+                                        padding,
+                                        padding
+                                    )
+                                }
+                        text = resources.getString(R.string.about_content)
+                        autoLinkMask = Linkify.WEB_URLS
+                        linksClickable = true
+                        movementMethod = LinkMovementMethod.getInstance()
+                    })
+                    .setPositiveButton(R.string.ok) { _, _ -> }
+                    .show()
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun searchByInput() {
