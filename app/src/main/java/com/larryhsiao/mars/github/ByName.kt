@@ -20,6 +20,8 @@ class ByName(
                 Uri.parse(
                     BuildConfig.GITHU_API_HOST
                 ).buildUpon()
+                    .appendPath("search")
+                    .appendPath("users")
                     .appendQueryParameter("q", keyword)
                     .appendQueryParameter("page", page.toString())
                     .build().toString()

@@ -9,7 +9,7 @@ import androidx.lifecycle.MutableLiveData
 import com.larryhsiao.mars.github.ByName
 import com.larryhsiao.mars.github.User
 import com.larryhsiao.mars.R
-import com.larryhsiao.mars.github.JsonUsers
+import com.larryhsiao.mars.github.GithubUsers
 
 /**
  *  View model of searching user
@@ -18,9 +18,10 @@ class SearchUserVM(private val app: Application) : AndroidViewModel(app) {
     private val backgroundThread = HandlerThread("SearchBG").apply { start() }
     private val bgHandler = Handler(backgroundThread.looper)
 
-    private val error = MutableLiveData<String>()
+    private val error = MutableLiveData<String>().apply { value = "" }
     private val users = ArrayList<User>()
-    private val usersLiveData = MutableLiveData<List<User>>().apply { value = users }
+    private val usersLiveData =
+        MutableLiveData<List<User>>().apply { value = users }
     private var keyword: String = ""
     private var page = 0
 
@@ -39,7 +40,7 @@ class SearchUserVM(private val app: Application) : AndroidViewModel(app) {
     /**
      * Load up the first page, this will clean all the exist search result.
      */
-    fun loadUp(keyword: String) {
+    fun search(keyword: String) {
         this.keyword = keyword
         this.page = 0
         bgHandler.post {
@@ -50,7 +51,6 @@ class SearchUserVM(private val app: Application) : AndroidViewModel(app) {
                 when {
                     it.code == 200 -> {
                         users.clear()
-                        users.addAll(JsonUsers(String(it.bodyBytes)).value())
                         usersLiveData.value = users
                     }
                     else -> errorHandling(it.code)
@@ -69,12 +69,8 @@ class SearchUserVM(private val app: Application) : AndroidViewModel(app) {
                 keyword,
                 ++page
             ).value().let {
-
                 when {
                     it.code == 200 -> {
-                        val result = JsonUsers(String(it.bodyBytes)).value()
-                        users.addAll(result)
-                        live.value = result
                     }
                     else -> errorHandling(it.code)
                 }
